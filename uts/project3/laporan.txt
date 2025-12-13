@@ -1,0 +1,19 @@
+LAPORAN PEMESANAN TIKET
+Tanggal: 21-10-2025 19:11:54
+
+Nama: Adit
+  - Avengers: Endgame x3 = Rp135,000 (pada 19:11:54)
+  Total: Rp135,000
+
+Nama: Budi
+  - Avengers: Endgame x2 = Rp95,000 (pada 19:11:54)
+  Total: Rp95,000
+
+Nama: Citra
+  - Frozen 2 x2 = Rp80,000 (pada 19:11:54)
+  Total: Rp80,000
+
+Nama: Jamal
+  - Avengers: Endgame x1 = Rp50,000 (pada 19:11:54)
+  Total: Rp50,000
+

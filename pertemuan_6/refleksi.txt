@@ -1,0 +1,5 @@
+Jelaskan, menurut Anda, apa yang akan terjadi jika Anda mencoba menjalankan file models/kontak.py secara langsung? Mengapa tidak ada output yang terlihat?
+
+Jika file models/kontak.py dijalankan secara langsung, maka tidak akan muncul output apa pun di terminal. Hal ini karena file tersebut hanya berisi definisi kelas Kontak, tanpa ada perintah untuk mengeksekusi kode, seperti pemanggilan fungsi atau penggunaan print().
+
+Dengan kata lain, Python hanya akan membaca dan memuat definisi kelas tersebut ke memori, namun tidak menjalankan proses apa pun. File ini memang dibuat sebagai modul pendukung, yang fungsinya untuk diimpor dan digunakan oleh file lain (seperti main.py). Karena tidak ada bagian yang menjalankan program secara langsung, maka ketika dijalankan sendiri, file ini tidak menghasilkan output.
