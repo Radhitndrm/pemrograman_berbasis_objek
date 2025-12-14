@@ -168,3 +168,19 @@ class CheckoutService:
 
         logger.error("Checkout gagal untuk %s", order.customer_name)
         return False
+
+
+order = Order(
+    customer_name="Budi",
+    total_price=250000
+)
+
+payment_processor = QRISProcessor()
+notifier = EmailNotifier()
+
+checkout_service = CheckoutService(
+    payment_processor=payment_processor,
+    notifier=notifier
+)
+
+checkout_service.run_checkout(order)
