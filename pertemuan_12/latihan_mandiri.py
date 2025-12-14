@@ -179,3 +179,26 @@ class SemesterAktifRule(IValidationRule):
 
         logger.info("Validasi semester aktif berhasil.")
         return True, "Semester aktif OK"
+
+
+rules = [
+    SksLimitRule(24),
+    PrerequisiteRule(),
+    JadwalBentrokRule(),
+    SemesterAktifRule(),  # Rule baru → bukti OCP
+]
+
+service = RegistrationService(rules)
+
+data = {
+    "total_sks": 22,
+    "prasyarat": ["MatkulA", "MatkulB"],
+    "matkul_yang_sudah_diambil": ["MatkulA"],
+    "jadwal": ["Senin-07", "Senin-09", "Senin-07"],
+    "semester_aktif": True,
+}
+
+hasil = service.validate_registration(data)
+
+for rule_name, status, message in hasil:
+    logger.info("%s | %s | %s", rule_name, status, message)
