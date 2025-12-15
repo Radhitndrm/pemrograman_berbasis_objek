@@ -1,77 +1,95 @@
-# Laporan Debugging: Analisis Bug PPN 10%
 
+# DEBUG REPORT – Bug PPN 10%
 
-Laporan ini mendokumentasikan proses debugging menggunakan `pdb` untuk menemukan penyebab kesalahan perhitungan harga akhir, di mana PPN 10% ditambahkan secara tidak semestinya (double counting atau tidak diminta).
+## Informasi Umum
 
-## Langkah-langkah Debugging
+* Modul: `diskon_service.py`
+* Class: `DiskonCalculator`
+* Method: `hitung_diskon`
+* Tools Debugging: `pdb` (Python Debugger)
 
-1.  **Menjalankan Program**
-    Saya menjalankan script `diskon_service.py` yang telah dilengkapi dengan `pdb.set_trace()`.
+---
 
-    ```bash
-    python diskon_service.py
-    ```
+## Deskripsi Bug
 
-2.  **Navigasi Code (`n`)**
-    Setelah program berhenti di breakpoint, saya menggunakan perintah `n` (next) untuk melangkah baris demi baris melewati perhitungan diskon yang sudah diperbaiki.
+Pada fungsi `hitung_diskon`, ditemukan bug berupa **penambahan PPN 10% secara tidak sengaja** pada harga setelah diskon. Hal ini menyebabkan hasil perhitungan harga akhir menjadi lebih besar dari yang diharapkan dan mengakibatkan beberapa unit test gagal.
 
-    ```text
-    > .../diskon_service.py(16)hitung_diskon()
-    -> jumlah_diskon = harga_awal * persentase_diskon / 100
-    (Pdb) n
-    > .../diskon_service.py(18)hitung_diskon()
-    -> harga_setelah_diskon = harga_awal - jumlah_diskon
-    (Pdb) n
-    > .../diskon_service.py(19)hitung_diskon()
-    -> harga_akhir = harga_setelah_diskon * 1.1
-    ```
+---
 
-## Bukti Variabel (`p`)
+## Langkah-Langkah Debugging
 
-Pada titik ini, variabel `harga_setelah_diskon` memegang nilai yang benar (900.0). Namun, baris berikutnya (`* 1.1`) mencurigakan.
+### 1. Menambahkan Breakpoint
 
-1.  **Memeriksa Harga Sebelum PPN Tambahan**
-    Saya memeriksa nilai sebelum baris 19 dieksekusi sepenuhnya (atau nilai variabel inputnya).
+Breakpoint ditambahkan pada awal fungsi `hitung_diskon` menggunakan perintah:
 
-    ```text
-    (Pdb) p harga_setelah_diskon
-    900.0
-    ```
+```python
+import pdb
+pdb.set_trace()
+```
 
-    _Nilai ini sudah benar sesuai ekspektasi (1000 - 10% = 900)._
+---
 
-2.  **Eksekusi Baris Bug**
-    Saya menjalankan baris 19.
+### 2. Menjalankan Unit Test
 
-    ```text
-    (Pdb) n
-    > .../diskon_service.py(21)hitung_diskon()
-    -> return harga_akhir
-    ```
+Unit test dijalankan dengan perintah:
 
-3.  **Membuktikan PPN Dihitung (Bug)**
-    Saya memeriksa nilai `harga_akhir` yang dihasilkan.
+```bash
+python -m unittest
+```
 
-    ```text
-    (Pdb) p harga_akhir
-    990.0
-    ```
+Eksekusi program berhenti pada breakpoint yang telah ditentukan.
 
-    **Analisis:**
-    Perintah `p harga_akhir` menunjukkan nilai **990.0**.
-    Sedangkan `p harga_setelah_diskon` adalah **900.0**.
+---
 
-    Selisih 90.0 ini berasal dari pengalian `* 1.1` (10%) pada baris:
-    `harga_akhir = harga_setelah_diskon * 1.1`
+### 3. Pemeriksaan Nilai Variabel (pdb)
 
-    Ini membuktikan bahwa sistem menambahkan PPN 10% lagi setelah diskon, yang menyebabkan hasil akhir tidak sesuai dengan _test case_ yang mengharapkan **900.0**.
+Dilakukan inspeksi variabel menggunakan perintah `p` di dalam mode pdb.
+
+```text
+(pdb) p harga_awal
+1000
+
+(pdb) p persentase_diskon
+10
+
+(pdb) p jumlah_diskon
+100.0
+
+(pdb) p harga_setelah_diskon
+900.0
+
+(pdb) p ppn
+90.0
+
+(pdb) p harga_akhir
+990.0
+```
+
+---
+
+## Analisis
+
+* Nilai `harga_setelah_diskon` sudah benar, yaitu **900.0**
+* Variabel `ppn` bernilai **90.0**, yaitu 10% dari harga setelah diskon
+* `harga_akhir` menjadi **990.0**, padahal sesuai spesifikasi seharusnya **900.0**
+
+Hal ini membuktikan bahwa **PPN 10% ditambahkan secara tidak sengaja**, sehingga harga dihitung lebih dari yang diharapkan.
+
+---
 
 ## Kesimpulan
 
-Bug ditemukan pada logika penambahan PPN:
+Bug disebabkan oleh adanya perhitungan dan penambahan PPN 10% yang **tidak termasuk dalam spesifikasi fungsi** `hitung_diskon`.
 
-```python
-harga_akhir = harga_setelah_diskon * 1.1
-```
+---
 
-Baris ini harus dihapus atau disesuaikan karena menambahkan biaya tambahan yang tidak sesuai dengan spesifikasi tes.
+## Solusi
+
+Menghapus seluruh logika perhitungan PPN dari fungsi `hitung_diskon`, sehingga fungsi hanya bertanggung jawab menghitung harga setelah diskon.
+
+---
+
+## Status Setelah Perbaikan
+
+* Bug PPN berhasil dihilangkan
+* Seluruh unit test (`test_diskon.py` dan `test_diskon_advanced.py`) **LULUS (OK)**

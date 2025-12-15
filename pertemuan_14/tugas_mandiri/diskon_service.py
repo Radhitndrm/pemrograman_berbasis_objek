@@ -1,5 +1,4 @@
 
-# diskon_service.py
 class DiskonCalculator:
     """Menghitung harga akhir setelah diskon."""
 

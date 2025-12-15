@@ -1,5 +1,3 @@
-
-# test_diskon_advanced.py
 import unittest
 from diskon_service import DiskonCalculator
 
